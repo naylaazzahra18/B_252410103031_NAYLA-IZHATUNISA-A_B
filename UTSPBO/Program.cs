@@ -1,154 +1,124 @@
 ﻿using System;
 using System.Collections.Generic;
 
-//Soal 1
+// SOAL 1
 class Agen
 {
-    public string idAgen { get; set; }
-    public string namaAgen { get; set; }
-    public int stokAgen { get; private set; }
-
-    public Agen(string idAgen, string namaAgen, int stokAgen)
-    {
-        idAgen = idAgen;
-        namaAgen = namaAgen;
-        stokAgen = stokAgen;
-    }
-
-    public void TambahStok(int jumlah)
-    {
-        if (jumlah > 0)
-        {
-            stokAgen += jumlah;
-        }
-    }
+    public string idAgen;
+    public string namaAgen;
+    public int stokAgen;
 
     public void TampilInfo()
     {
-        Console.WriteLine("ID Agen :" + idAgen);
-        Console.WriteLine("Nama Agen  : " + namaAgen);
-        Console.WriteLine("Stok Agen :" + stokAgen + " galon");
+        Console.WriteLine("ID Agen   : " + idAgen);
+        Console.WriteLine("Nama Agen : " + namaAgen);
+        Console.WriteLine("Stok Agen : " + stokAgen);
     }
 }
 
-
-//Soal 2
+// SOAL 2
 abstract class ProdukGalon
 {
-    public string idProduk { get; private set; }
-    public string namaProduk { get; private set; }
-    public int stokGudang { get; private set; }
+    private string idProduk;
+    private string namaProduk;
+    private int stokGudang;
 
-    public ProdukGalon(string idProduk, string namaProduk, int stokGudang)
+    public string IdProduk
     {
-        this.idProduk = idProduk;
-        this.namaProduk = namaProduk;
-        this.stokGudang = stokGudang;
+        get { return idProduk; }
+        set { idProduk = value; }
     }
 
-    public void KurangiStok(int jumlah)
+    public string NamaProduk
+    {
+        get { return namaProduk; }
+        set { namaProduk = value; }
+    }
+
+    public int StokGudang
+    {
+        get { return stokGudang; }
+        private set { stokGudang = value; }
+    }
+
+    public ProdukGalon(string id, string nama, int stok)
+    {
+        if (stok < 0)
+        {
+            throw new ArgumentException(
+                "Stok tidak boleh negatif!"
+            );
+        }
+
+        idProduk = id;
+        namaProduk = nama;
+        stokGudang = stok;
+    }
+
+    public bool KurangiStok(int jumlah)
     {
         if (jumlah <= 0)
         {
+            return false;
         }
 
         if (jumlah > stokGudang)
         {
+            return false;
         }
 
         stokGudang -= jumlah;
+        return true;
     }
 
-    public void TambahStok(int jumlah)
-    {
-        if (jumlah <= 0)
-        {
-        }
-        stokGudang += jumlah;
-    }
-    public abstract decimal HitungBiaya(int jumlah);
-}
-
-//Soal 3
-class produkGalon
-{
-    class galonAkua : produkGalon;
-{
-    public galonAkua(string id, string nama, int stok)
-    {
-    }
-    public override decimal HitungBiaya(int jumlah)
-    {
-        return harga * 20000;
-    }
-}
-
-class galonBerkeran : produkGalon
-{
-    public galonBerkeran(string id, string nama, int stok)
-{
-}
-public override decimal HitungBiaya(int jumlah)
-{
-    return harga * 12000;
-    }
+    // ABSTRACT CLASS
+    public abstract int HitungBiaya(int jumlah);
 }
 
 
-
-//Soal 4
-class produkGalon
+// SOAL 3
+class GalonAkua : ProdukGalon
 {
-    class galonAkua : produkGalon
+    public GalonAkua(string id, string nama, int stok)
+        : base(id, nama, stok)
     {
-        public galonAkua(string id, string nama, int stok);
     }
-    public override decimal HitungBiaya(int jumlah)
+
+    // SOAL 4 (POLYMORPHISM)
+    public override int HitungBiaya(int jumlah)
     {
         return jumlah * 20000;
     }
-   class galonAkua : produkGalon
-    {
-      public galonAkua(string id, string nama, int stok)
-    {
-    }
-    public override decimal HitungBiaya(int jumlah)
-    {
-    return jumlah * 12000;
-
-    }
 }
 
-//Soal 5
-abstract class produkGalon;
-class galonAkua : produkGalon
+class GalonBerkeran : ProdukGalon
 {
-    public galonAkua(string id, string nama, int stok)
-{
-}
-public override decimal HitungBiaya(int jumlah)
-{
-        return harga = 20000;
+    public string JenisKeran { get; set; }
+
+    public GalonBerkeran(
+        string id,
+        string nama,
+        int stok,
+        string jenisKeran
+    ) : base(id, nama, stok)
+    {
+        JenisKeran = jenisKeran;
+    }
+
+    // SOAL 4 (POLYMORPHISM)
+    public override int HitungBiaya(int jumlah)
+    {
+        return jumlah * 12000;
     }
 }
 
-class galonBerkeran : produkGalon
-{
-    public galonBerkeran(string id, string nama, int stok)
-{
-}
-public override decimal HitungBiaya(int jumlah)
-{
-    return harga=12000;
-}
-}
 
-
-//Soal 6
+// SOAL 6
 interface DapatDidistribusikan
 {
     void KirimPaket();
 }
+
 
 class DistribusiGalon : DapatDidistribusikan
 {
@@ -156,7 +126,11 @@ class DistribusiGalon : DapatDidistribusikan
     private ProdukGalon produk;
     private int jumlah;
 
-    public DistribusiGalon(Agen agen, ProdukGalon produk, int jumlah)
+    public DistribusiGalon(
+        Agen agen,
+        ProdukGalon produk,
+        int jumlah
+    )
     {
         agenTujuan = agen;
         this.produk = produk;
@@ -167,95 +141,182 @@ class DistribusiGalon : DapatDidistribusikan
     {
         Console.WriteLine("\n=== PROSES DISTRIBUSI ===");
 
-   
         if (jumlah <= 0)
         {
-            Console.WriteLine("Gagal: Jumlah galon harus lebih dari 0.");
+            Console.WriteLine(
+                "Gagal: Jumlah harus lebih dari 0."
+            );
             return;
         }
 
-        if (jumlah > produk.stokGudang)
+        if (jumlah > produk.StokGudang)
         {
-            Console.WriteLine("Gagal: Stok gudang tidak mencukupi.");
-            Console.WriteLine("Stok gudang dan agen tidak berubah.");
+            Console.WriteLine(
+                "Gagal: Stok gudang tidak mencukupi."
+            );
             return;
         }
 
-  
-        produk.KurangiStok(jumlah);
-        agenTujuan.TambahStok(jumlah);
+        bool berhasil = produk.KurangiStok(jumlah);
 
-        Console.WriteLine("Paket berhasil dikirimkan!");
-        Console.WriteLine("Produk       : " + produk.namaProduk);
-        Console.WriteLine("Tujuan Agen  : " + agenTujuan.namaAgen);
-        Console.WriteLine("Jumlah       : " + jumlah + " galon");
-        Console.WriteLine("Biaya        : Rp" +produk.HitungBiaya(jumlah).ToString("N0"));
-        Console.WriteLine("Pesan: Paket berhasil dikirimkan ke agen.");
+        if (berhasil)
+        {
+            agenTujuan.stokAgen += jumlah;
+
+            Console.WriteLine(
+                "Paket berhasil dikirimkan ke agen "
+                + agenTujuan.namaAgen
+            );
+
+            Console.WriteLine(
+                "Jumlah dikirim: " + jumlah
+            );
+
+            Console.WriteLine(
+                "Sisa stok gudang: " + produk.StokGudang
+            );
+
+            Console.WriteLine(
+                "Stok agen sekarang: " + agenTujuan.stokAgen
+            );
+        }
     }
 }
 
-    class Program
+// SOAL 7 (OPSIONAL)
+class SindikatGalon
+{
+    private List<Agen> daftarAgen = new List<Agen>();
+
+    private List<ProdukGalon> daftarProduk =
+        new List<ProdukGalon>();
+
+    public void TambahAgen(Agen agen)
     {
-        static void Main(string[] args)
+        daftarAgen.Add(agen);
+    }
+
+    public void TambahProduk(ProdukGalon produk)
+    {
+        daftarProduk.Add(produk);
+    }
+
+    public void TampilkanSindikat()
+    {
+        Console.WriteLine("\n=== DATA ASET SINDIKAT ===");
+
+        Console.WriteLine("\n--- DAFTAR AGEN ---");
+
+        foreach (Agen agen in daftarAgen)
         {
-            Console.WriteLine("=================================");
-            Console.WriteLine("     MANAJEMEN SINDIKAT GALON");
-            Console.WriteLine("=================================");
-
-            Agen agen1 = new Agen("A001", "Agen Jember", 10);
-            Agen agen2 = new Agen("A002", "Agen Surabaya", 5);
-
-
-            ProdukGalon produk1 =
-                new GalonAkua("P001", "Galon Aqua", 100);
-
-            ProdukGalon produk2 =
-                new GalonBerkeran("P002", "Galon Berkeran", 80);
-
-
-            Console.WriteLine("\n--- INFORMASI AGEN ---");
-            agen1.TampilInfo();
+            agen.TampilInfo();
             Console.WriteLine();
-            agen2.TampilInfo();
+        }
 
+        Console.WriteLine("--- DAFTAR PRODUK ---");
 
-            Console.WriteLine("\n--- PERHITUNGAN BIAYA ---");
+        foreach (ProdukGalon produk in daftarProduk)
+        {
+            Console.WriteLine("ID Produk   : " + produk.IdProduk);
+            Console.WriteLine("Nama Produk : " + produk.NamaProduk);
+            Console.WriteLine("Stok Gudang : " + produk.StokGudang);
 
-            ProdukGalon[] daftarProduk =
+            if (produk is GalonBerkeran)
             {
-            produk1,
-            produk2
-        };
+                GalonBerkeran keran = (GalonBerkeran)produk;
 
-            foreach (ProdukGalon produk in daftarProduk)
-            {
                 Console.WriteLine(
-                    produk.namaProduk + " : Rp" +
-                    produk.HitungBiaya(2).ToString("N0")
+                    "Jenis Keran : " + keran.JenisKeran
                 );
             }
 
-            DistribusiGalon kirim1 =
-                new DistribusiGalon(agen1, produk1, 20);
-
-            kirim1.KirimPaket();
-
-            DistribusiGalon kirim2 =
-                new DistribusiGalon(agen2, produk2, 100);
-
-            kirim2.KirimPaket();
-
-
-            SindikatGalon sindikat = new SindikatGalon();
-
-            sindikat.TambahAgen(agen1);
-            sindikat.TambahAgen(agen2);
-
-            sindikat.TambahProduk(produk1);
-            sindikat.TambahProduk(produk2);
-
-            sindikat.TampilkanSindikat();
-
-            Console.WriteLine("\nProgram selesai.");
+            Console.WriteLine();
         }
     }
+}
+
+
+
+// MAIN PROGRAM
+class Program
+{
+    static void Main(string[] args)
+    {
+        // SOAL 1
+        Agen agen1 = new Agen();
+        agen1.idAgen = "AG001";
+        agen1.namaAgen = "Agen Banyuwangi";
+        agen1.stokAgen = 50;
+
+        Agen agen2 = new Agen();
+        agen2.idAgen = "AG002";
+        agen2.namaAgen = "Agen Jember";
+        agen2.stokAgen = 30;
+
+        Console.WriteLine("\n=== DATA AGEN ===");
+
+        agen1.TampilInfo();
+
+        Console.WriteLine();
+
+        agen2.TampilInfo();
+
+
+        // SOAL 2 DAN 5
+        ProdukGalon produk1 = new GalonAkua(
+            "P001", "Galon Akua", 100
+        );
+
+        ProdukGalon produk2 = new GalonBerkeran(
+            "P002", "Galon Berkeran", 100, "Keran Putar"
+        );
+
+        Console.WriteLine("\n=== DATA PRODUK ===");
+
+        Console.WriteLine("ID Produk: " + produk1.IdProduk);
+        Console.WriteLine("Nama Produk: " + produk1.NamaProduk);
+        Console.WriteLine("Stok Gudang: " + produk1.StokGudang);
+
+        Console.WriteLine();
+
+        Console.WriteLine("ID Produk: " + produk2.IdProduk);
+        Console.WriteLine("Nama Produk: " + produk2.NamaProduk);
+        Console.WriteLine("Stok Gudang: " + produk2.StokGudang);
+
+
+        // SOAL 4
+        Console.WriteLine("\n=== PERHITUNGAN BIAYA ===");
+
+        Console.WriteLine(
+            "Galon Akua (5 galon): Rp"
+            + produk1.HitungBiaya(5)
+        );
+
+        Console.WriteLine(
+            "Galon Berkeran (5 galon): Rp"
+            + produk2.HitungBiaya(5)
+        );
+
+
+        // SOAL 6
+        DistribusiGalon distribusi = new DistribusiGalon(
+            agen1, produk1, 10
+        );
+
+        distribusi.KirimPaket();
+
+
+        // SOAL 7
+        SindikatGalon sindikat = new SindikatGalon();
+
+        sindikat.TambahAgen(agen1);
+        sindikat.TambahAgen(agen2);
+
+        sindikat.TambahProduk(produk1);
+        sindikat.TambahProduk(produk2);
+
+        sindikat.TampilkanSindikat();
+
+        Console.ReadLine();
+    }
+}
